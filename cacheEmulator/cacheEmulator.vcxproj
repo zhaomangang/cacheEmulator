@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{25D6C6E1-FB88-437D-A78A-86D134BEBF87}</ProjectGuid>
+    <ProjectGuid>{E55EB4EA-D91A-43F0-8ABF-6ABBA27A24E7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>cacheEmulator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
@@ -139,11 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="Address.h" />
     <ClInclude Include="Cache.h" />
     <ClInclude Include="FuMemo.h" />
+    <ClInclude Include="sundry.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cache.cpp" />
+    <ClCompile Include="fumemo.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

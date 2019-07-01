@@ -15,3 +15,22 @@ cpu将数据写入cache，cache返回写响应给cpu，cup不再写之后cache将数据写回主存
 cache中的数据是有效的吗？《DMA修改主存》
 
 */ 
+
+#include "FuMemo.h"
+#include "Cache.h"
+#include <iostream>
+using namespace std;
+int main()
+{
+	char address[3];
+	Cache cache;
+	FuMemo memory;
+	for(int i=0;i<4;i++)
+	{
+		cin >> address;
+		cache.accessContrl(address, memory);
+	}
+
+
+	return 0;
+}

@@ -15,16 +15,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FuMemo.h">
+    <ClInclude Include="Address.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Cache.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FuMemo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="sundry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="fumemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
