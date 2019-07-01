@@ -16,6 +16,11 @@ cache中的数据是有效的吗？《DMA修改主存》
 
 */ 
 
+/*
+主存 1024字节 单数地址放的是‘J’ 双数‘L’
+
+
+*/
 #include "FuMemo.h"
 #include "Cache.h"
 #include <iostream>
@@ -25,12 +30,21 @@ int main()
 	char address[4];
 	Cache cache;
 	FuMemo memory;
-	for(int i=0;i<4;i++)
+	cache.setPolice(0);	//0、全相联1、直接映射
+	memory.writeData();
+	if (0==cache.getPolice())
 	{
+		memory.divideLump();
+	}
+	else
+	{
+		memory.divideArea();
+	}
+	while(1)
+	{
+		cout << "输入地址（3位16进制，不够补0，例如00F）：";
 		cin >> address;
 		cache.accessContrl(address, memory);
 	}
-
-
 	return 0;
 }

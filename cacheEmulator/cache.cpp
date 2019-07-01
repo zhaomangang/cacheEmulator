@@ -5,6 +5,20 @@
 #include <iostream>
 using namespace std;
 
+int binToDec_2_(int bin[2])
+{
+	int dec = bin[0] * 2 + bin[1] * 1;
+	return dec;
+}
+int binToDec_8_(int bin[8])
+{
+	int dec = 0;
+	for (int i = 0; i < 8; i++)
+	{
+		dec = dec + bin[i] * pow(2, 7 - i);
+	}
+	return dec;
+}
 void hexToBin(char hex[3], int bin[12])
 {
 	//int bin[12] = {0};
@@ -47,7 +61,37 @@ void hexToBin(char hex[3], int bin[12])
 	}
 	cout << endl;
 }
-
+Address addreAnaArea(char addr[3])
+{
+	//全相联地址解析
+	Address address;
+	int bin[12] = { 0 };
+	//转二进制
+	hexToBin(addr, bin);
+	address.tag[0] = 0;
+	address.tag[1] = 0;
+	for (int i = 2; i < 8; i++)
+	{
+		address.tag[i] = bin[i];
+	}
+	for (int i = 8; i < 10; i++)
+	{
+		address.area[i - 8] = bin[i];
+	}
+	for (int i = 10; i < 12; i++)
+	{
+		address.lu_ad[i - 10] = bin[i];
+	}
+	cout << "Tag is: ";
+	for (int i = 0; i < 8; i++)
+	{
+		cout << address.tag[i];
+	}
+	cout << endl;
+	cout << "Area is: " << address.area[0] << address.area[1] << endl;
+	cout << "Offset is: " << address.lu_ad[0] << address.lu_ad[1] << endl;
+	return address;
+}
 Address addreAna(char addr[3])
 {
 	//地址解析，将8位16进制地址解析为二进制tag和lu_ad即块号和块内地址
@@ -111,43 +155,101 @@ bool Cache::compare(int ta[8])
 	}
 	return false;
 }
+bool Cache::compareArea(Address address)
+{
+	int line_temp = binToDec_2_(address.area);
+	line_temp = line_temp % CACHE_SIZE;
+	if (comp(address.tag, this->line[line_temp].tag))
+	{
+		return true;
+	}
+	return false;
+}
+
 void Cache::accessContrl(char addr[3], FuMemo memory)
 {
 	//cpu访问cache时传入16进制地址
 	char data;
-	Address address = addreAna(addr);	//解析地址
-	if (compare(address.tag))
+	Address address;
+	if (this->police == 0)
 	{
-		//命中
-		cout << "命中cache" << endl;
-		data = this->getData(address);	//从cache中取数据
+		//全相联映射
+		address = addreAna(addr);	//解析地址
+		if (compare(address.tag))
+		{
+			//命中
+			cout << "命中cache" << endl;
+			data = this->getData(address);	//从cache中取数据
 
+		}
+		else
+		{
+			//没有命中,cpu访问主存
+			cout << "未命中cache" << endl;
+			data = memory.getData(address);	//访问主存
+
+			moveDate(memory, address);//将主存中某一块数据搬至cache并填写相应标志位
+
+
+		}
 	}
-	else
+	else if (this->police == 1)
 	{
-		//没有命中,cpu访问主存
-		cout << "未命中cache" << endl;
-		data = memory.getData(address);	//访问主存
-		
-		moveDate(memory,address);//将主存中某一块数据搬至cache并填写相应标志位
-
-
+		//直接映射
+		address = addreAnaArea(addr);	//解析地址
+		if (compareArea(address))
+		{
+			//命中
+			cout << "命中cache" << endl;
+			getDataArea(address,&data);	//从cache获取数据
+		}
+		else {
+			//未命中
+			cout << "未命中cache" << endl;
+			data = memory.getDataArea(address);	//访问主存
+			moveDataArea(memory, address);	//移动数据
+		}
 	}
+
 	cout << "data is " << data << endl;
 
 
 }
-
+void Cache::moveDataArea(FuMemo memory, Address address)
+{
+	//直接映射时将数据从主存搬至cache
+	int i = binToDec_2_(address.area);	//行号
+	cout << "将主存中数据放入cache哪一行：" << i << endl;
+	for (int j = 0; j < LINE_SIZE; j++)
+	{
+		switch (j)
+		{
+		case 0:address.lu_ad[0] = 0; address.lu_ad[1] = 0; break;
+		case 1:address.lu_ad[0] = 0; address.lu_ad[1] = 1; break;
+		case 2:address.lu_ad[0] = 1; address.lu_ad[1] = 0; break;
+		case 3:address.lu_ad[0] = 1; address.lu_ad[1] = 1; break;
+		default:
+			break;
+		}
+		this->line[i].data[j] = memory.getDataArea(address);
+	}
+	this->line[i].valid = true;
+	for (int j = 0; j < 8; j++)
+	{
+		this->line[i].tag[j] = address.tag[j];
+	}
+}
 void Cache::moveDate(FuMemo memory,Address address)
 {
 	//根据相应策略将主存中数据搬至cache并填写相应标志位
 	int i;
 	srand((unsigned)(time(NULL)));
+	int bre = 0;
 	do {
-		
+		bre++;
 		i = rand() % CACHE_SIZE;	//随机放入行
-		cout << "将主存中数据放入cache哪一行：" <<i<< endl;
-	}while(this->line[i].valid);
+	}while(this->line[i].valid&&bre == CACHE_SIZE);
+	cout << "将主存中数据放入cache哪一行：" << i << endl;
 	for (int j = 0; j < LINE_SIZE; j++)
 	{
 		switch (j)
@@ -168,19 +270,19 @@ void Cache::moveDate(FuMemo memory,Address address)
 	}
 
 }
-int binToDec_2_(int bin[2])
+
+void Cache::getDataArea(Address address,char *data)
 {
-	int dec = bin[0] * 2 + bin[1] * 1;
-	return dec;
-}
-int binToDec_8_(int bin[8])
-{
-	int dec = 0;
-	for (int i = 0; i < 8; i++)
+	//data = new char;
+	if (comp(this->line[binToDec_2_(address.area)].tag, address.tag))
 	{
-		dec = dec + bin[i] * pow(2, 7 - i);
+		*data = this->line[binToDec_2_(address.area)].data[binToDec_2_(address.lu_ad)];
 	}
-	return dec;
+	
+}
+int Cache::getPolice()
+{
+	return police;
 }
 char Cache::getData(Address address)
 {
@@ -194,4 +296,14 @@ char Cache::getData(Address address)
 			return data;
 		}
 	}
+}
+
+void Cache::setPolice(int po)
+{
+	//设置映射策略
+	/*
+		0、全相联
+		1、直接映射
+	*/
+	this->police = po;
 }

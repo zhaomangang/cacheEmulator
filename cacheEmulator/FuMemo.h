@@ -20,12 +20,16 @@ using namespace std;
 
 #define SIZE 1024		//主存大小
 #define LUMP_SIZE 4		//块大小
-
+#define AREA_SIZE 4		//区大小=cache行数
 
 struct Lump
 {
-	int lu_nu[LUMP_SIZE];	//块内地址
 	char data[LUMP_SIZE];	//块数据
+};
+
+struct Area
+{
+	Lump lump[AREA_SIZE];	
 };
 class FuMemo
 {
@@ -33,10 +37,13 @@ public:
 	FuMemo();
 	void writeData();	//写入数据
 	void divideLump();	//主存分块
+	void divideArea();	//主存分区
 	char getData(Address address);	//cpu直接访问主存接口
+	char getDataArea(Address address);
 
 private:
 	char data[SIZE];	//主存数据
 	Lump lump[SIZE/LUMP_SIZE];	//块
+	Area area[SIZE /AREA_SIZE];	//根据cache行数对主存进行分区
 };
 #endif // !FUMEMO_H

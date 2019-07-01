@@ -5,8 +5,9 @@
 class Address 
 {
 public:
-	int tag[8];		//哪个块
+	int tag[8];		//标志
 	int lu_ad[2];	//块内地址
+	int area[2];	//
 	Address()
 	{
 
@@ -20,6 +21,10 @@ public:
 		for (int i = 0; i < 2; i++)
 		{
 			lu_ad[i] = add.lu_ad[i];
+		}
+		for (int i = 0; i < 2; i++)
+		{
+			area[i] = add.area[i];
 		}
 	}
 private:
