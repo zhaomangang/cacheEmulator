@@ -1,5 +1,5 @@
 #include "Cache.h"
-
+#include <time.h>
 #include "FuMemo.h"
 #include "Address.h"
 #include <iostream>
@@ -40,7 +40,7 @@ void hexToBin(char hex[3], int bin[12])
 
 	}
 	//cout << "hexto:" << bin << endl;
-	cout << "hex bin is:";
+	cout << "BIN ADRESS IS: ";
 	for (int i = 0; i < 12; i++)
 	{
 		cout << bin[i];
@@ -65,13 +65,13 @@ Address addreAna(char addr[3])
 		address.lu_ad[i - 10] = bin[i];
 	}
 
-	cout << "tag is:";
+	cout << "Tag is:";
 	for (int i = 0; i < 8; i++)
 	{
 		cout << address.tag[i];
 	}
 	cout << endl;
-	cout << "lu_Ad is:" << address.lu_ad[0] << address.lu_ad[1]<<endl;
+	cout << "Offset is:" << address.lu_ad[0] << address.lu_ad[1]<<endl;
 	return address;
 }
 
@@ -133,7 +133,7 @@ void Cache::accessContrl(char addr[3], FuMemo memory)
 
 
 	}
-	cout << "data is" << data << endl;
+	cout << "data is " << data << endl;
 
 
 }
@@ -141,32 +141,31 @@ void Cache::accessContrl(char addr[3], FuMemo memory)
 void Cache::moveDate(FuMemo memory,Address address)
 {
 	//根据相应策略将主存中数据搬至cache并填写相应标志位
-	for (int i = 0; i < LINE_SIZE; i++)
+	int i;
+	srand((unsigned)(time(NULL)));
+	do {
+		
+		i = rand() % CACHE_SIZE;	//随机放入行
+		cout << "将主存中数据放入cache哪一行：" <<i<< endl;
+	}while(this->line[i].valid);
+	for (int j = 0; j < LINE_SIZE; j++)
 	{
-		if (this->line[i].valid == false)
+		switch (j)
 		{
-			for (int j = 0; j < LINE_SIZE; j++)
-			{
-				switch (j)
-				{
-				case 0:address.lu_ad[0] = 0; address.lu_ad[1] = 0; break;
-				case 1:address.lu_ad[0] = 0; address.lu_ad[1] = 1; break;
-				case 2:address.lu_ad[0] = 1; address.lu_ad[1] = 0; break;
-				case 3:address.lu_ad[0] = 1; address.lu_ad[1] = 1; break;
-				default:
-					break;
-				}
-				this->line[i].data[j] = memory.getData(address);
-			}
-			this->line[i].valid = true;
-			for (int j = 0; j < 8; j++)
-			{
-				this->line[i].tag[j] = address.tag[j];
-			}
+		case 0:address.lu_ad[0] = 0; address.lu_ad[1] = 0; break;
+		case 1:address.lu_ad[0] = 0; address.lu_ad[1] = 1; break;
+		case 2:address.lu_ad[0] = 1; address.lu_ad[1] = 0; break;
+		case 3:address.lu_ad[0] = 1; address.lu_ad[1] = 1; break;
+		default:
 			break;
 		}
+		this->line[i].data[j] = memory.getData(address);
 	}
-
+	this->line[i].valid = true;
+	for (int j = 0; j < 8; j++)
+	{
+		this->line[i].tag[j] = address.tag[j];
+	}
 
 }
 int binToDec_2_(int bin[2])

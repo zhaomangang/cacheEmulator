@@ -1,4 +1,4 @@
 ﻿  cache.cpp
-e:\learn\组成原理\cacheemulator\cacheemulator\cache.cpp(182): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-e:\learn\组成原理\cacheemulator\cacheemulator\cache.cpp(198): warning C4715: “Cache::getData”: 不是所有的控件路径都返回值
+e:\learn\组成原理\cacheemulator\cacheemulator\cache.cpp(181): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
+e:\learn\组成原理\cacheemulator\cacheemulator\cache.cpp(197): warning C4715: “Cache::getData”: 不是所有的控件路径都返回值
   cacheEmulator.vcxproj -> E:\learn\组成原理\cacheEmulator\cacheEmulator\Debug\cacheEmulator.exe

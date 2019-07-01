@@ -22,7 +22,7 @@ cache中的数据是有效的吗？《DMA修改主存》
 using namespace std;
 int main()
 {
-	char address[3];
+	char address[4];
 	Cache cache;
 	FuMemo memory;
 	for(int i=0;i<4;i++)
